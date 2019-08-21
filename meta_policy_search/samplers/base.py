@@ -14,7 +14,7 @@ class Sampler(object):
     """
 
     def __init__(self, env, policy, batch_size, max_path_length):
-        assert hasattr(env, 'reset') and hasattr(env, 'step')
+        # assert hasattr(env, 'reset') and hasattr(env, 'step')
 
         self.env = env
         self.policy = policy
@@ -29,6 +29,9 @@ class Sampler(object):
             (list) : A list of paths.
         """
         raise NotImplementedError
+    
+    def set_env(self, env):
+        self.env = env
 
 
 class SampleProcessor(object):
