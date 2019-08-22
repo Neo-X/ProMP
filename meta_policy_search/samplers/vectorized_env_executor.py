@@ -207,15 +207,18 @@ def worker(remote, parent_remote, env_pickle, n_envs, max_path_length, seed):
     """
     parent_remote.close()
 
-    # envs = [pickle.loads(env_pickle) for _ in range(n_envs)]
-    envs = []
-    for _ in range(n_envs):
-        env = terrainRLSim.getEnv(env_name="PD_Humanoid_3D_GRF_Mixed_1Sub_Imitate_30FPS_DenseState_v0", render=True)
-        # env = globals()[config['env']]() # instantiate env
-        env = normalize(env) # apply normalize wrapper to env
-        envs.append(env)
+    if (env_pickle is None):
+    
+        envs = []
+        for _ in range(n_envs):
+            env = terrainRLSim.getEnv(env_name="PD_Humanoid_3D_GRF_Mixed_1Sub_Imitate_30FPS_ObsFlat_v0", render=False)
+            # env = globals()[config['env']]() # instantiate env
+            env = normalize(env) # apply normalize wrapper to env
+            envs.append(env)
+    else:
+        envs = [pickle.loads(env_pickle) for _ in range(n_envs)]
     np.random.seed(seed)
-
+    
     ts = np.zeros(n_envs, dtype='int')
 
     while True:

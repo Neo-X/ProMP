@@ -31,7 +31,7 @@ def main(config):
     
     policy = MetaGaussianMLPPolicy(
             name="meta-policy",
-            obs_dim=np.prod((208,)),
+            obs_dim=np.prod((196,)),
             action_dim=np.prod((38,)),
             meta_batch_size=config['meta_batch_size'],
             hidden_sizes=config['hidden_sizes'],
@@ -105,11 +105,11 @@ if __name__=="__main__":
 
             'baseline': 'LinearFeatureBaseline',
 
-            'env': 'PD_Humanoid_3D_GRF_Mixed_1Sub_Imitate_30FPS_DenseState_v0',
+            'env': 'PD_Humanoid_3D_GRF_Mixed_1Sub_Imitate_30FPS_ObsFlat_v0',
 
             # sampler config
             'rollouts_per_meta_task': 1,
-            'max_path_length': 128,
+            'max_path_length': 256,
             'parallel': True,
 
             # sample processor config

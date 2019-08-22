@@ -26,7 +26,8 @@ def main(config):
 
     env = globals()[config['env']]() # instantiate env
     env = normalize(env) # apply normalize wrapper to env
-
+    
+    print("env.observation_space.shape: ", env.observation_space.shape)
     policy = MetaGaussianMLPPolicy(
             name="meta-policy",
             obs_dim=np.prod(env.observation_space.shape),
