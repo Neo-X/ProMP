@@ -3,6 +3,7 @@ import numpy as np
 import time
 from meta_policy_search.utils import logger
 
+
 class Trainer(object):
     """
     Performs steps of meta-policy search.
@@ -41,7 +42,6 @@ class Trainer(object):
             start_itr=0,
             num_inner_grad_steps=1,
             sess=None,
-            experiment=None
             ):
         self.algo = algo
         self.env = env
@@ -55,7 +55,6 @@ class Trainer(object):
         if sess is None:
             sess = tf.Session()
         self.sess = sess
-        self.experiment = experiment
 
     def train(self):
         """
@@ -81,6 +80,7 @@ class Trainer(object):
                 itr_start_time = time.time()
                 logger.log("\n ---------------- Iteration %d ----------------" % itr)
                 logger.log("Sampling set of tasks/goals for this meta-batch...")
+
                 self.sampler.update_tasks()
                 self.policy.switch_to_pre_update()  # Switch to pre-update policy
 
@@ -102,7 +102,7 @@ class Trainer(object):
 
                     logger.log("Processing samples...")
                     time_proc_samples_start = time.time()
-                    samples_data = self.sample_processor.process_samples(paths, log='all', log_prefix='Step_%d-' % step, experiment=self.experiment)
+                    samples_data = self.sample_processor.process_samples(paths, log='all', log_prefix='Step_%d-' % step)
                     all_samples_data.append(samples_data)
                     list_proc_samples_time.append(time.time() - time_proc_samples_start)
 
@@ -155,7 +155,7 @@ class Trainer(object):
         """
         Gets the current policy and env for storage
         """
-        return dict(itr=itr, policy=self.policy, env=self.env, baseline=self.baseline)
+        return dict(itr=itr, policy=self.policy, env=None, baseline=self.baseline)
 
     def log_diagnostics(self, paths, prefix):
         # TODO: we aren't using it so far

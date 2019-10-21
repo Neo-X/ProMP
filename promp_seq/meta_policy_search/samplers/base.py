@@ -25,7 +25,7 @@ class Sampler(object):
         """
         Collect batch_size trajectories
 
-        Returns: 
+        Returns:
             (list) : A list of paths.
         """
         raise NotImplementedError
@@ -52,12 +52,12 @@ class SampleProcessor(object):
             gae_lambda=1,
             normalize_adv=False,
             positive_adv=False,
-            ):
+    ):
 
         assert 0 <= discount <= 1.0, 'discount factor must be in [0,1]'
         assert 0 <= gae_lambda <= 1.0, 'gae_lambda must be in [0,1]'
         assert hasattr(baseline, 'fit') and hasattr(baseline, 'predict')
-        
+
         self.baseline = baseline
         self.discount = discount
         self.gae_lambda = gae_lambda
@@ -168,7 +168,6 @@ class SampleProcessor(object):
                 deltas, self.discount * self.gae_lambda)
 
         return paths
-
 
     def _stack_path_data(self, paths):
         observations = np.concatenate([path["observations"] for path in paths])
