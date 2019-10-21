@@ -120,3 +120,6 @@ venv.bak/
 
 # sandbox
 /sandbox
+
+.DS_Store
+
