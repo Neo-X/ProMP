@@ -22,12 +22,16 @@ class MetaIterativeEnvExecutor(object):
 
     def __init__(self, env, meta_batch_size, envs_per_task, max_path_length):
         self.envs = []
-        for _ in range(meta_batch_size * envs_per_task):
-            env = terrainRLSim.getEnv(env_name="PD_Humanoid_3D_GRF_Mixed_1Sub_Imitate_30FPS_DenseState_v0", render=True)
-            # env = globals()[config['env']]() # instantiate env
-            env = normalize(env) # apply normalize wrapper to env
-            self.envs.append(env)
-        # self.envs = np.asarray([copy.deepcopy(env) for _ in range(meta_batch_size * envs_per_task)])
+        print ("env:", env)
+        sys.exit()
+        if (env is None):
+            for _ in range(meta_batch_size * envs_per_task):
+                env = terrainRLSim.getEnv(env_name="PD_Humanoid_3D_GRF_Mixed_1Sub_Imitate_30FPS_DenseState_v0", render=True)
+                # env = globals()[config['env']]() # instantiate env
+                env = normalize(env) # apply normalize wrapper to env
+                self.envs.append(env)
+        else:
+            self.envs = np.asarray([copy.deepcopy(env) for _ in range(meta_batch_size * envs_per_task)])
         self.ts = np.zeros(len(self.envs), dtype='int')  # time steps
         self.max_path_length = max_path_length
 
@@ -115,14 +119,9 @@ class MetaParallelEnvExecutor(object):
         self.envs_per_task = envs_per_task
         self.remotes, self.work_remotes = zip(*[Pipe() for _ in range(meta_batch_size)])
         seeds = np.random.choice(range(10**6), size=meta_batch_size, replace=False)
-        
-        """
+        # print ("Env:", env)
         self.ps = [
-            Process(target=worker, args=(work_remote, remote, pickle.dumps(env), envs_per_task, max_path_length, seed))
-            for (work_remote, remote, seed) in zip(self.work_remotes, self.remotes, seeds)]  # Why pass work remotes?
-        """
-        self.ps = [
-            Process(target=worker, args=(work_remote, remote, None, envs_per_task, max_path_length, seed))
+            Process(target=worker, args=(work_remote, remote, env, envs_per_task, max_path_length, seed))
             for (work_remote, remote, seed) in zip(self.work_remotes, self.remotes, seeds)]  # Why pass work remotes?
         
         for p in self.ps:
@@ -206,17 +205,21 @@ def worker(remote, parent_remote, env_pickle, n_envs, max_path_length, seed):
         seed (int): random seed for the worker
     """
     parent_remote.close()
-
-    if (env_pickle is None):
-    
-        envs = []
-        for _ in range(n_envs):
-            env = terrainRLSim.getEnv(env_name="PD_Humanoid_3D_GRF_Mixed_1Sub_Imitate_30FPS_ObsFlat_v0", render=False)
+    # print ("env_pickle: ", env_pickle)
+    # sys.exit()
+    envs = []
+    for _ in range(n_envs):
+        if (env_pickle[0] == 'terrianrlSim'):
+            env = terrainRLSim.getEnv(env_name=env_pickle[1], render=False)
             # env = globals()[config['env']]() # instantiate env
             env = normalize(env) # apply normalize wrapper to env
-            envs.append(env)
-    else:
-        envs = [pickle.loads(env_pickle) for _ in range(n_envs)]
+        else:
+            from meta_policy_search.envs.point_envs.point_env_2d_corner import MetaPointEnvCorner
+            env = MetaPointEnvCorner() # instantiate env
+            # env = globals()[env_pickle[1]]() # instantiate env
+            env = normalize(env) # apply normalize wrapper to env
+        envs.append(env)
+    
     np.random.seed(seed)
     
     ts = np.zeros(n_envs, dtype='int')

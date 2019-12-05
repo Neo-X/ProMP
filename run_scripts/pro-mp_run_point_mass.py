@@ -37,13 +37,14 @@ def main(config):
         )
 
     sampler = MetaSampler(
-        env=env,
+        env=('multiworld', config['env'], env),
         policy=policy,
         rollouts_per_meta_task=config['rollouts_per_meta_task'],  # This batch_size is confusing
         meta_batch_size=config['meta_batch_size'],
         max_path_length=config['max_path_length'],
         parallel=config['parallel'],
     )
+    sampler.set_env(env)
 
     sample_processor = MetaSampleProcessor(
         baseline=baseline,

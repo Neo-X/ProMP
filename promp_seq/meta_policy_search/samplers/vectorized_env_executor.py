@@ -22,12 +22,15 @@ class MetaIterativeEnvExecutor(object):
 
     def __init__(self, env, meta_batch_size, envs_per_task, max_path_length):
         self.envs = []
-        for _ in range(meta_batch_size * envs_per_task):
-            env = terrainRLSim.getEnv(env_name="PD_Humanoid_3D_GRF_Mixed_1Sub_Imitate_30FPS_DenseState_v0", render=True)
-            # env = globals()[config['env']]() # instantiate env
-            env = normalize(env) # apply normalize wrapper to env
-            self.envs.append(env)
-        # self.envs = np.asarray([copy.deepcopy(env) for _ in range(meta_batch_size * envs_per_task)])
+        sys.exit()
+        if (env is None):
+            for _ in range(meta_batch_size * envs_per_task):
+                env = terrainRLSim.getEnv(env_name="PD_Humanoid_3D_GRF_Mixed_1Sub_Imitate_30FPS_DenseState_v0", render=True)
+                # env = globals()[config['env']]() # instantiate env
+                env = normalize(env) # apply normalize wrapper to env
+                self.envs.append(env)
+        else:
+            self.envs = np.asarray([copy.deepcopy(env) for _ in range(meta_batch_size * envs_per_task)])
         self.ts = np.zeros(len(self.envs), dtype='int')  # time steps
         self.max_path_length = max_path_length
 
@@ -206,7 +209,8 @@ def worker(remote, parent_remote, env_pickle, n_envs, max_path_length, seed):
         seed (int): random seed for the worker
     """
     parent_remote.close()
-
+    print ("env_pickle: ", env_pickle)
+    sys.exit()
     if (env_pickle is None):
     
         envs = []

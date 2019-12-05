@@ -38,7 +38,7 @@ def main(config):
         )
 
     sampler = MetaSampler(
-        env=None,
+        env=('terrianrlSim', config['env']),
         policy=policy,
         rollouts_per_meta_task=config['rollouts_per_meta_task'],  # This batch_size is confusing
         meta_batch_size=config['meta_batch_size'],
