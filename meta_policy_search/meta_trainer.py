@@ -82,8 +82,11 @@ class Trainer(object):
                 itr_start_time = time.time()
                 logger.log("\n ---------------- Iteration %d ----------------" % itr)
                 logger.log("Sampling set of tasks/goals for this meta-batch...")
-
-                self.sampler.update_tasks()
+                if itr == self.nitr:
+                    self.sampler.update_tasks(False)
+                else:
+                    self.sampler.update_tasks()
+                    
                 self.policy.switch_to_pre_update()  # Switch to pre-update policy
 
                 all_samples_data, all_paths = [], []
