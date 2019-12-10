@@ -214,10 +214,11 @@ def worker(remote, parent_remote, env_pickle, n_envs, max_path_length, seed):
             # env = globals()[config['env']]() # instantiate env
             env = normalize(env) # apply normalize wrapper to env
         else:
-            from meta_policy_search.envs.point_envs.point_env_2d_corner import MetaPointEnvCorner
-            env = MetaPointEnvCorner() # instantiate env
+            #from meta_policy_search.envs.point_envs.point_env_2d_corner import MetaPointEnvCorner
+            #env = MetaPointEnvCorner() # instantiate env
             # env = globals()[env_pickle[1]]() # instantiate env
-            env = normalize(env) # apply normalize wrapper to env
+            #env = normalize(env) # apply normalize wrapper to env
+            env=pickle.loads(env_pickle)
         envs.append(env)
     
     np.random.seed(seed)
