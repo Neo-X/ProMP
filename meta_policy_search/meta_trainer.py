@@ -82,7 +82,7 @@ class Trainer(object):
                 itr_start_time = time.time()
                 logger.log("\n ---------------- Iteration %d ----------------" % itr)
                 logger.log("Sampling set of tasks/goals for this meta-batch...")
-                if itr == self.nitr:
+                if itr == self.n_itr:
                     self.sampler.update_tasks(False)
                 else:
                     self.sampler.update_tasks()
