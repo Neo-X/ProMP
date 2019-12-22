@@ -209,7 +209,7 @@ def worker(remote, parent_remote, env_pickle, n_envs, max_path_length, seed):
     # sys.exit()
     envs = []
     for _ in range(n_envs):
-        if (type(env) is tuple) and (env_pickle[0] == 'terrianrlSim'):
+        if (type(env_pickle) is tuple) and (env_pickle[0] == 'terrianrlSim'):
             env = terrainRLSim.getEnv(env_name=env_pickle[1], render=False)
             # env = globals()[config['env']]() # instantiate env
             env = normalize(env) # apply normalize wrapper to env
