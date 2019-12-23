@@ -26,7 +26,7 @@ def main(config):
 
     baseline =  globals()[config['baseline']]() #instantiate baseline
     
-    env = terrainRLSim.getEnv(env_name=None, render=True)
+    env = terrainRLSim.getEnv(env_name=None, render=False)
     # env = normalize(env) # apply normalize wrapper to env
     
     policy = MetaGaussianMLPPolicy(
@@ -108,7 +108,7 @@ if __name__=="__main__":
             'env': 'PD_Biped2D_MultiTask_Terrain-v0',
 
             # sampler config
-            'rollouts_per_meta_task': 1,
+            'rollouts_per_meta_task': 20,
             'max_path_length': 256,
             'parallel': True,
 
@@ -130,7 +130,7 @@ if __name__=="__main__":
             'init_inner_kl_penalty': 5e-3,
             'adaptive_inner_kl_penalty': False, # whether to use an adaptive or fixed KL-penalty coefficient
             'n_itr': 1001, # number of overall training iterations
-            'meta_batch_size': 4, # number of sampled meta-tasks per iterations
+            'meta_batch_size': 40, # number of sampled meta-tasks per iterations
             'num_inner_grad_steps': 1, # number of inner / adaptation gradient steps
 
         }
