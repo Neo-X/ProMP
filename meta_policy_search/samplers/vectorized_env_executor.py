@@ -208,18 +208,14 @@ def worker(remote, parent_remote, env_pickle, n_envs, max_path_length, seed):
     # print ("env_pickle: ", env_pickle)
     # sys.exit()
     envs = []
-    for _ in range(n_envs):
-        if (type(env_pickle) is tuple) and (env_pickle[0] == 'terrianrlSim'):
-            env = terrainRLSim.getEnv(env_name=env_pickle[1], render=False)
-            # env = globals()[config['env']]() # instantiate env
-            env = normalize(env) # apply normalize wrapper to env
-        else:
-            #from meta_policy_search.envs.point_envs.point_env_2d_corner import MetaPointEnvCorner
-            #env = MetaPointEnvCorner() # instantiate env
-            # env = globals()[env_pickle[1]]() # instantiate env
-            #env = normalize(env) # apply normalize wrapper to env
-            env=pickle.loads(env_pickle)
-        envs.append(env)
+    if type(env_pickle) is tuple:
+        for _ in range(n_envs):
+            if (env_pickle[0] == 'terrianrlSim'):
+                env = terrainRLSim.getEnv(env_name=env_pickle[1], render=False)
+                # env = globals()[config['env']]() # instantiate env
+                env = normalize(env) # apply normalize wrapper to env
+    else:
+        envs = [pickle.loads(env_pickle) for _ in range(n_envs)]
     
     np.random.seed(seed)
     
