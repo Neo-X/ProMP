@@ -1,5 +1,11 @@
+from comet_ml import Experiment
+experiment = Experiment(api_key="cpFSd8xDOCuqURKozmTVzbqwS",
+                            project_name="bair-ml4l3", workspace="zhiwei-z")
+
+import sys
+sys.path.append("./")
 from meta_policy_search.baselines.linear_baseline import LinearFeatureBaseline
-from meta_policy_search.envs.point_envs.point_env_2d_corner import MetaPointEnvCorner
+from meta_policy_search.envs.mujoco_envs.half_cheetah_rand_vel import HalfCheetahRandVelEnv
 from meta_policy_search.envs.normalized_env import normalize
 from meta_policy_search.meta_algos.pro_mp import ProMP
 from meta_policy_search.meta_trainer import Trainer
@@ -16,41 +22,37 @@ import json
 import argparse
 import time
 
-from simAdapter import terrainRLSim
-
 meta_policy_search_path = '/'.join(os.path.realpath(os.path.dirname(__file__)).split('/')[:-1])
 
 def main(config):
+    # config['seed'] = 4ß
+    experiment.set_name("pos task only, size = 15, logging vel")
     set_seed(config['seed'])
+    experiment.log_parameters(config)
+    # experiment.log_parameter("task limit size", 3)
 
+    # experiment.log_metric("seed", config['seed'])
+    baseline = globals()[config['baseline']]() #instantiate baseline
 
-    baseline =  globals()[config['baseline']]() #instantiate baseline
-    
-    env = terrainRLSim.getEnv(env_name=None, render=True)
-    # env = normalize(env) # apply normalize wrapper to env
-    
+    env = globals()[config['env']]() # instantiate env
+    env = normalize(env) # apply normalize wrapper to env
+
     policy = MetaGaussianMLPPolicy(
             name="meta-policy",
-            obs_dim=np.prod((196,)),
-            action_dim=np.prod((38,)),
+            obs_dim=np.prod(env.observation_space.shape),
+            action_dim=np.prod(env.action_space.shape),
             meta_batch_size=config['meta_batch_size'],
             hidden_sizes=config['hidden_sizes'],
         )
 
     sampler = MetaSampler(
-        env=None,
+        env=env,
         policy=policy,
         rollouts_per_meta_task=config['rollouts_per_meta_task'],  # This batch_size is confusing
         meta_batch_size=config['meta_batch_size'],
         max_path_length=config['max_path_length'],
         parallel=config['parallel'],
     )
-    env = terrainRLSim.getEnv(env_name=config['env'], render=True)
-    # env = globals()[config['env']]() # instantiate env
-    env = normalize(env) # apply normalize wrapper to env
-    print ("env.observation_space.shape: ", env.observation_space.shape)
-    print ("env.action_space.shape: ", env.action_space.shape)
-    sampler.set_env(env)
 
     sample_processor = MetaSampleProcessor(
         baseline=baseline,
@@ -80,6 +82,7 @@ def main(config):
         sample_processor=sample_processor,
         n_itr=config['n_itr'],
         num_inner_grad_steps=config['num_inner_grad_steps'],
+        experiment=experiment
     )
 
     trainer.train()
@@ -101,24 +104,24 @@ if __name__=="__main__":
     else: # use default config
 
         config = {
-            'seed': 1234,
+            'seed': 1,
 
             'baseline': 'LinearFeatureBaseline',
 
-            'env': 'PD_Humanoid_3D_GRF_Mixed_1Sub_Imitate_30FPS_ObsFlat_v0',
+            'env': 'HalfCheetahRandVelEnv',
 
             # sampler config
-            'rollouts_per_meta_task': 1,
-            'max_path_length': 256,
+            'rollouts_per_meta_task': 20,
+            'max_path_length': 100,
             'parallel': True,
 
             # sample processor config
-            'discount': 0.95,
-            'gae_lambda': 0.8,
+            'discount': 0.99,
+            'gae_lambda': 1,
             'normalize_adv': True,
 
             # policy config
-            'hidden_sizes': (256, 128),
+            'hidden_sizes': (64, 64),
             'learn_std': True, # whether to learn the standard deviation of the gaussian policy
 
             # ProMP config
@@ -127,10 +130,10 @@ if __name__=="__main__":
             'num_promp_steps': 5, # number of ProMp steps without re-sampling
             'clip_eps': 0.3, # clipping range
             'target_inner_step': 0.01,
-            'init_inner_kl_penalty': 5e-3,
+            'init_inner_kl_penalty': 5e-4,
             'adaptive_inner_kl_penalty': False, # whether to use an adaptive or fixed KL-penalty coefficient
-            'n_itr': 1001, # number of overall training iterations
-            'meta_batch_size': 4, # number of sampled meta-tasks per iterations
+            'n_itr': 100, # number of overall training iterations
+            'meta_batch_size': 40, # number of sampled meta-tasks per iterations
             'num_inner_grad_steps': 1, # number of inner / adaptation gradient steps
 
         }

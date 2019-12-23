@@ -67,7 +67,7 @@ class SampleProcessor(object):
         self.normalize_adv = normalize_adv
         self.positive_adv = positive_adv
 
-    def process_samples(self, paths, log=False, log_prefix=''):
+    def process_samples(self, paths, log=False, log_prefix='', experiment=None):
         """
         Processes sampled paths. This involves:
             - computing discounted rewards (returns)
@@ -92,7 +92,7 @@ class SampleProcessor(object):
         samples_data, paths = self._compute_samples_data(paths)
 
         # 7) log statistics if desired
-        self._log_path_stats(paths, log=log, log_prefix='')
+        self._log_path_stats(paths, log=log, log_prefix='', experiment=experiment)
 
         assert samples_data.keys() >= {'observations', 'actions', 'rewards', 'advantages', 'returns'}
         return samples_data
@@ -135,10 +135,11 @@ class SampleProcessor(object):
 
         return samples_data, paths
 
-    def _log_path_stats(self, paths, log=False, log_prefix=''):
+    def _log_path_stats(self, paths, log=False, log_prefix='', experiment=None):
         # compute log stats
         average_discounted_return = np.mean([path["returns"][0] for path in paths])
         undiscounted_returns = [sum(path["rewards"]) for path in paths]
+        # average_vel = np.mean([path["env_infos"]["forward_vel"] for path in paths])
 
         if log == 'reward':
             logger.logkv(log_prefix + 'AverageReturn', np.mean(undiscounted_returns))
@@ -150,6 +151,15 @@ class SampleProcessor(object):
             logger.logkv(log_prefix + 'StdReturn', np.std(undiscounted_returns))
             logger.logkv(log_prefix + 'MaxReturn', np.max(undiscounted_returns))
             logger.logkv(log_prefix + 'MinReturn', np.min(undiscounted_returns))
+
+            if experiment:
+                # experiment.log_metric("Average velocity", average_vel)
+                experiment.log_metric("maxReturn", np.max(undiscounted_returns))
+                experiment.log_metric("MinReturn", np.min(undiscounted_returns))
+                experiment.log_metric('AverageReturn', np.mean(undiscounted_returns))
+                experiment.log_metric('StdReturn', np.std(undiscounted_returns))
+                experiment.log_metric('AverageDiscountedReturn', average_discounted_return)
+                experiment.log_metric('StdReturn', np.std(undiscounted_returns))
 
     def _compute_advantages(self, paths, all_path_baselines):
         assert len(paths) == len(all_path_baselines)
