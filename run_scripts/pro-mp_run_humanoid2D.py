@@ -47,7 +47,7 @@ def main(config):
         max_path_length=config['max_path_length'],
         parallel=config['parallel'],
     )
-    env = terrainRLSim.getEnv(env_name=config['env'], render=True)
+    env = terrainRLSim.getEnv(env_name=config['env'], render=False)
     # env = globals()[config['env']]() # instantiate env
     env = normalize(env) # apply normalize wrapper to env
     print ("env.observation_space.shape: ", env.observation_space.shape)

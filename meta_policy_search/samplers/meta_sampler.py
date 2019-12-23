@@ -52,7 +52,7 @@ class MetaSampler(Sampler):
         """
         Samples a new goal for each meta task
         """
-        tasks = self.env.sample_tasks(self.meta_batch_size, out_disabled)
+        tasks = self.env.sample_tasks(self.meta_batch_size)
         print ("tasks: ", tasks)
         assert len(tasks) == self.meta_batch_size
         self.vec_env.set_tasks(tasks)
