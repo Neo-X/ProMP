@@ -1,4 +1,7 @@
 import sys
+from comet_ml import Experiment
+experiment = Experiment(api_key="v063r9jHG5GDdPFvCtsJmHYZu",
+                            project_name="ml4l3", workspace="glenb")
 sys.path.append("./")
 from meta_policy_search.baselines.linear_baseline import LinearFeatureBaseline
 from meta_policy_search.envs.point_envs.point_env_2d_corner import MetaPointEnvCorner
@@ -23,7 +26,10 @@ from simAdapter import terrainRLSim
 meta_policy_search_path = '/'.join(os.path.realpath(os.path.dirname(__file__)).split('/')[:-1])
 
 def main(config):
+    
+    experiment.set_name("short meta saving test")
     set_seed(config['seed'])
+    experiment.log_parameters(config)
 
 
     baseline =  globals()[config['baseline']]() #instantiate baseline
@@ -82,6 +88,7 @@ def main(config):
         sample_processor=sample_processor,
         n_itr=config['n_itr'],
         num_inner_grad_steps=config['num_inner_grad_steps'],
+        experiment=experiment
     )
 
     trainer.train()
@@ -111,7 +118,7 @@ if __name__=="__main__":
 
             # sampler config
             'rollouts_per_meta_task': 20,
-            'max_path_length': 256,
+            'max_path_length': 128,
             'parallel': True,
 
             # sample processor config

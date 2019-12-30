@@ -93,6 +93,8 @@ class Trainer(object):
                 list_sampling_time, list_inner_step_time, list_outer_step_time, list_proc_samples_time = [], [], [], []
                 start_total_inner_time = time.time()
                 if itr < self.n_itr:
+                    if self.experiment:
+                        self.experiment.set_step(itr)
                     logger.log("NNNNOOOOORRRRMMMMAAAALLLL")
                     for step in range(self.num_inner_grad_steps + 1):
                         logger.log('** Step ' + str(step) + ' **')
