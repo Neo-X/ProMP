@@ -121,7 +121,7 @@ class MetaParallelEnvExecutor(object):
         seeds = np.random.choice(range(10**6), size=meta_batch_size, replace=False)
         # print ("Env:", env)
         self.ps = [
-            Process(target=worker, args=(work_remote, remote, env, envs_per_task, max_path_length, seed))
+            Process(target=worker, args=(work_remote, remote, pickle.dumps(env), envs_per_task, max_path_length, seed))
             for (work_remote, remote, seed) in zip(self.work_remotes, self.remotes, seeds)]  # Why pass work remotes?
         
         for p in self.ps:
@@ -208,10 +208,11 @@ def worker(remote, parent_remote, env_pickle, n_envs, max_path_length, seed):
     # print ("env_pickle: ", env_pickle)
     # sys.exit()
     envs = []
-    if type(env_pickle) is tuple:
+    env_ = pickle.loads(env_pickle)
+    if type(env_) is tuple:
         for _ in range(n_envs):
-            if (env_pickle[0] == 'terrianrlSim'):
-                env = terrainRLSim.getEnv(env_name=env_pickle[1], render=False)
+            if (env_[0] == 'terrianrlSim'):
+                env = terrainRLSim.getEnv(env_name=env_[1], render=False)
                 # env = globals()[config['env']]() # instantiate env
                 env = normalize(env) # apply normalize wrapper to env
                 envs.append(env)
