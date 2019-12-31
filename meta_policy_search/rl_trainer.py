@@ -74,6 +74,7 @@ class RLTrainer(object):
         """
         with self.sess.as_default() as sess:
 
+
             # initialize uninitialized vars  (only initialize vars that were not loaded)
             uninit_vars = [var for var in tf.global_variables() if not sess.run(tf.is_variable_initialized(var))]
             sess.run(tf.variables_initializer(uninit_vars))
