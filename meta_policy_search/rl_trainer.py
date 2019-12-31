@@ -140,16 +140,16 @@ class RLTrainer(object):
             time_maml_opt_start = time.time()
             """ ------------------ Outer Policy Update ---------------------"""
 
-            logger.log("Optimizing policy...")
+            # logger.log("Optimizing policy...")
             # This needs to take all samples_data so that it can construct graph for meta-optimization.
-            time_outer_step_start = time.time()
-            self.algo.optimize_policy(all_samples_data)
+            # time_outer_step_start = time.time()
+            # self.algo.optimize_policy(all_samples_data)
 
             """ ------------------- Logging Stuff --------------------------"""
             logger.logkv('Itr', itr)
             logger.logkv('n_timesteps', self.sampler.total_timesteps_sampled)
 
-            logger.logkv('Time-OuterStep', time.time() - time_outer_step_start)
+            # logger.logkv('Time-OuterStep', time.time() - time_outer_step_start)
             logger.logkv('Time-TotalInner', total_inner_time)
             logger.logkv('Time-InnerStep', np.sum(list_inner_step_time))
             logger.logkv('Time-SampleProc', np.sum(list_proc_samples_time))
