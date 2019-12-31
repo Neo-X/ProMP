@@ -103,7 +103,7 @@ class RLTrainer(object):
             itr = 0
             for step in range(50 + 1):
                 if self.experiment:
-                    self.experiment.set_step(itr)
+                    self.experiment.set_step(step)
                 # logger.log('** Step ' + str(step) + ' **')
 
                 """ -------------------- Sampling --------------------------"""
