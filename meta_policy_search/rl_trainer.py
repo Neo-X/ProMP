@@ -84,7 +84,7 @@ class RLTrainer(object):
             #     if self.experiment:
             #         self.experiment.set_step(itr)
             itr_start_time = time.time()
-            logger.log("\n ---------------- Iteration %d ----------------" % itr)
+            # logger.log("\n ---------------- Iteration %d ----------------" % itr)
             logger.log("Sampling set of tasks/goals for this meta-batch...")
             # if itr == self.n_itr:
             #     self.sampler.update_tasks(False)
@@ -100,10 +100,11 @@ class RLTrainer(object):
 
             # Chelsea's suggestion
             # self.algo.inner_lr = self.algo.inner_lr * 2
+            itr = 0
             for step in range(50 + 1):
                 if self.experiment:
-                    self.experiment.set_step(itr + step)
-                logger.log('** Step ' + str(step) + ' **')
+                    self.experiment.set_step(itr)
+                # logger.log('** Step ' + str(step) + ' **')
 
                 """ -------------------- Sampling --------------------------"""
 
