@@ -1,6 +1,6 @@
 from comet_ml import Experiment
 experiment = Experiment(api_key="KWwx7zh6I2uw6oQMkpEo3smu0",
-                            project_name="bair-ml4l3", workspace="zhiwei-z")
+                            project_name="ml4l3", workspace="glenb")
 
 import sys
 sys.path.append("./")
