@@ -40,7 +40,7 @@ def main(config):
     env = globals()[config['env']]() # instantiate env
     env = normalize(env) # apply normalize wrapper to env
 
-    with open('/saved_policies/mjvel.policy', 'rb') as policy_file:
+    with open('./saved_policies/mjvel.policy', 'rb') as policy_file:
         policy = pickle.load(policy_file)
         print("policy loaded")
 
