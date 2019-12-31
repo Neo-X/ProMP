@@ -1,6 +1,6 @@
 from comet_ml import Experiment
 experiment = Experiment(api_key="KWwx7zh6I2uw6oQMkpEo3smu0",
-                            project_name="bair-ml4l3", workspace="zhiwei-z")
+                            project_name="ml4l3", workspace="glenb")
 
 import sys
 sys.path.append("./")
@@ -21,7 +21,6 @@ import os
 import json
 import argparse
 import time
-import pickle
 
 meta_policy_search_path = '/'.join(os.path.realpath(os.path.dirname(__file__)).split('/')[:-1])
 
@@ -87,9 +86,7 @@ def main(config):
     )
 
     trainer.train()
-    with open('/saved_policies/mjvel.policy', 'wb') as policy_file:
-        pickle.dump(policy, policy_file)
-        print("saved policies")
+
 
 if __name__=="__main__":
     idx = int(time.time())

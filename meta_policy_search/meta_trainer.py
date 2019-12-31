@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 import time
 from meta_policy_search.utils import logger
-
+import pickle
 
 class Trainer(object):
     """
@@ -196,6 +196,9 @@ class Trainer(object):
                 logger.dumpkvs()
 
         logger.log("Training finished")
+        with open('/saved_policies/mjvel.policy', 'wb') as policy_file:
+            pickle.dump(policy, policy_file)
+            print("saved policies")
         self.sess.close()        
 
     def get_itr_snapshot(self, itr):
