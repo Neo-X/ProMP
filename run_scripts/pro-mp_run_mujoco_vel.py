@@ -21,6 +21,7 @@ import os
 import json
 import argparse
 import time
+import pickle
 
 meta_policy_search_path = '/'.join(os.path.realpath(os.path.dirname(__file__)).split('/')[:-1])
 
@@ -84,6 +85,11 @@ def main(config):
         num_inner_grad_steps=config['num_inner_grad_steps'],
         experiment=experiment
     )
+
+    with tf.Session().as_default() as sess:
+        with open('./saved_policies/mjvel.policy', 'wb') as policy_file:
+            pickle.dump(self.policy, policy_file)
+            print("saved policies")
 
     trainer.train()
 
