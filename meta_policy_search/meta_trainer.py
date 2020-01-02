@@ -159,7 +159,9 @@ class Trainer(object):
                 logger.log("Saved")
 
                 logger.dumpkvs()
-
+            with open('./saved_policies/mjvel.policy', 'wb') as policy_file:
+                pickle.dump(self.policy, policy_file)
+                print("saved policies")
 
         logger.log("Training finished")
 

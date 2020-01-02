@@ -46,47 +46,48 @@ def main(config):
             print("policy loaded")
 
 
-    sampler = MetaSampler(
-        env=env,
-        policy=policy,
-        rollouts_per_meta_task=config['rollouts_per_meta_task'],  # This batch_size is confusing
-        meta_batch_size=config['meta_batch_size'],
-        max_path_length=config['max_path_length'],
-        parallel=config['parallel'],
-    )
+        sampler = MetaSampler(
+            env=env,
+            policy=policy,
+            rollouts_per_meta_task=config['rollouts_per_meta_task'],  # This batch_size is confusing
+            meta_batch_size=config['meta_batch_size'],
+            max_path_length=config['max_path_length'],
+            parallel=config['parallel'],
+        )
 
-    sample_processor = MetaSampleProcessor(
-        baseline=baseline,
-        discount=config['discount'],
-        gae_lambda=config['gae_lambda'],
-        normalize_adv=config['normalize_adv'],
-    )
+        sample_processor = MetaSampleProcessor(
+            baseline=baseline,
+            discount=config['discount'],
+            gae_lambda=config['gae_lambda'],
+            normalize_adv=config['normalize_adv'],
+        )
 
-    algo = ProMP(
-        policy=policy,
-        inner_lr=config['inner_lr'],
-        meta_batch_size=config['meta_batch_size'],
-        num_inner_grad_steps=config['num_inner_grad_steps'],
-        learning_rate=config['learning_rate'],
-        num_ppo_steps=config['num_promp_steps'],
-        clip_eps=config['clip_eps'],
-        target_inner_step=config['target_inner_step'],
-        init_inner_kl_penalty=config['init_inner_kl_penalty'],
-        adaptive_inner_kl_penalty=config['adaptive_inner_kl_penalty'],
-    )
+        algo = ProMP(
+            policy=policy,
+            inner_lr=config['inner_lr'],
+            meta_batch_size=config['meta_batch_size'],
+            num_inner_grad_steps=config['num_inner_grad_steps'],
+            learning_rate=config['learning_rate'],
+            num_ppo_steps=config['num_promp_steps'],
+            clip_eps=config['clip_eps'],
+            target_inner_step=config['target_inner_step'],
+            init_inner_kl_penalty=config['init_inner_kl_penalty'],
+            adaptive_inner_kl_penalty=config['adaptive_inner_kl_penalty'],
+        )
 
-    trainer = RLTrainer(
-        algo=algo,
-        policy=policy,
-        env=env,
-        sampler=sampler,
-        sample_processor=sample_processor,
-        n_itr=config['n_itr'],
-        num_inner_grad_steps=config['num_inner_grad_steps'],
-        experiment=experiment
-    )
+        trainer = RLTrainer(
+            algo=algo,
+            policy=policy,
+            env=env,
+            sampler=sampler,
+            sample_processor=sample_processor,
+            n_itr=config['n_itr'],
+            num_inner_grad_steps=config['num_inner_grad_steps'],
+            sess=sess,
+            experiment=experiment
+        )
 
-    trainer.train()
+        trainer.train()
 
 
 if __name__=="__main__":
@@ -134,7 +135,7 @@ if __name__=="__main__":
             'target_inner_step': 0.01,
             'init_inner_kl_penalty': 5e-4,
             'adaptive_inner_kl_penalty': False, # whether to use an adaptive or fixed KL-penalty coefficient
-            'n_itr': 20, # number of overall training iterations
+            'n_itr': 0, # number of overall training iterations
             'meta_batch_size': 40, # number of sampled meta-tasks per iterations
             'num_inner_grad_steps': 1, # number of inner / adaptation gradient steps
 
