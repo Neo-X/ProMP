@@ -86,12 +86,13 @@ def main(config):
         experiment=experiment
     )
 
+
+
+    trainer.train()
     with tf.Session().as_default() as sess:
         with open('./saved_policies/mjvel.policy', 'wb') as policy_file:
             pickle.dump(policy, policy_file)
             print("saved policies")
-
-    trainer.train()
 
 
 if __name__=="__main__":
