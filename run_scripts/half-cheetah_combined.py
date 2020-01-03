@@ -29,14 +29,49 @@ import pickle
 
 meta_policy_search_path = '/'.join(os.path.realpath(os.path.dirname(__file__)).split('/')[:-1])
 
-def main():
+def main(config):
     TASKS1=[0, 0.2, 0.4]
     TASKS2=[0, 0.2, 0.4, 0.6]
     # step one
+    config['n_itr'] = 1
     promphc.TASKS = TASKS1
-    promphc.main()
+    promphc.main(config)
 
 
 
 if __name__=="__main__":
+    config = {
+        'seed': 1,
+
+        'baseline': 'LinearFeatureBaseline',
+
+        'env': 'HalfCheetahRandVelEnv',
+
+        # sampler config
+        'rollouts_per_meta_task': 20,
+        'max_path_length': 100,
+        'parallel': True,
+
+        # sample processor config
+        'discount': 0.99,
+        'gae_lambda': 1,
+        'normalize_adv': True,
+
+        # policy config
+        'hidden_sizes': (64, 64),
+        'learn_std': True,  # whether to learn the standard deviation of the gaussian policy
+
+        # ProMP config
+        'inner_lr': 0.1,  # adaptation step size
+        'learning_rate': 1e-3,  # meta-policy gradient step size
+        'num_promp_steps': 5,  # number of ProMp steps without re-sampling
+        'clip_eps': 0.3,  # clipping range
+        'target_inner_step': 0.01,
+        'init_inner_kl_penalty': 5e-4,
+        'adaptive_inner_kl_penalty': False,  # whether to use an adaptive or fixed KL-penalty coefficient
+        'n_itr': 0,  # number of overall training iterations
+        'meta_batch_size': 40,  # number of sampled meta-tasks per iterations
+        'num_inner_grad_steps': 1,  # number of inner / adaptation gradient steps
+
+    }
     main()
