@@ -11,19 +11,19 @@ TASKSL1 = np.array([0, 0.2, 0.4])
 
 class HalfCheetahRandVelEnv(MetaEnv, MujocoEnv, gym.utils.EzPickle):
     def __init__(self):
+        self.set_tasks(TASKS2)
         self.set_task(self.sample_tasks(1)[0])
         MujocoEnv.__init__(self, 'half_cheetah.xml', 5)
         gym.utils.EzPickle.__init__(self)
 
     def sample_tasks(self, n_tasks):
-        task = TASKS1
         # task = np.append([-0.6, -0.4, -0.2], task)
         # if out_disabled:
             # return np.full(n_tasks, -0.5)
 
             # return np.full(n_tasks, task[len(task) - 1] + 0.5)
             # return np.full(n_tasks, task[0] - 0.5)
-        return np.array([task[idx] for idx in np.random.choice(range(len(task)), size=n_tasks)])
+        return np.array([self._TASKS[idx] for idx in np.random.choice(range(len(self._TASKS)), size=n_tasks)])
 
     def set_task(self, task):
         """
@@ -31,6 +31,13 @@ class HalfCheetahRandVelEnv(MetaEnv, MujocoEnv, gym.utils.EzPickle):
             task: task of the meta-learning environment
         """
         self.goal_velocity = task
+
+    def set_tasks(self, tasks):
+        """
+        Args:
+            tasks: tasks of the meta-learning environment
+        """
+        self._TASKS = tasks
 
     def get_task(self):
         """
