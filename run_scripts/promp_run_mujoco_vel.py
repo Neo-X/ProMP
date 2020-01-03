@@ -25,7 +25,7 @@ import pickle
 
 meta_policy_search_path = '/'.join(os.path.realpath(os.path.dirname(__file__)).split('/')[:-1])
 TASKS=np.array([0, 0.2, 0.4])
-def main(config):
+def main(config, saved_file="./saved_polivies/mjvel.polivy"):
     # config['seed'] = 4
     experiment.set_name("short meta saving test")
     set_seed(config['seed'])
@@ -85,7 +85,7 @@ def main(config):
         n_itr=config['n_itr'],
         num_inner_grad_steps=config['num_inner_grad_steps'],
         experiment=experiment,
-        saved_file="./saved_policies/mjvel1.policy"
+        saved_file=saved_file
     )
 
 
@@ -152,4 +152,5 @@ if __name__=="__main__":
     json.dump(config, open(args.dump_path + '/params.json', 'w'), cls=ClassEncoder)
 
     # start the actual algorithm
-    main(config)
+    saved_file = "./saved_policies/mjvel.policy"
+    main(config, saved_file)

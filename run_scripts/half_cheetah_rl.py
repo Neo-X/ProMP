@@ -30,7 +30,7 @@ import pickle
 
 meta_policy_search_path = '/'.join(os.path.realpath(os.path.dirname(__file__)).split('/')[:-1])
 TASK=np.array([0.6])
-def main(config):
+def main(config, load_file="./saved_policies/mjvel.policy"):
     # config['seed'] = 4
     experiment.set_name("short meta saving test")
     set_seed(config['seed'])
@@ -45,7 +45,7 @@ def main(config):
     env.set_tasks(TASK)
 
     with tf.Session().as_default() as sess:
-        with open('./saved_policies/mjvel.policy', 'rb') as policy_file:
+        with open(load_file, 'rb') as policy_file:
             policy = pickle.load(policy_file)
             print("policy loaded")
 
@@ -153,4 +153,6 @@ if __name__=="__main__":
     json.dump(config, open(args.dump_path + '/params.json', 'w'), cls=ClassEncoder)
 
     # start the actual algorithm
+    load_file="./saved_policies/mjvel.policy"
     main(config)
+

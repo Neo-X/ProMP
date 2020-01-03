@@ -33,45 +33,69 @@ def main(config):
     TASKS1=[0, 0.2, 0.4]
     TASKS2=[0, 0.2, 0.4, 0.6]
     # step one
+    saved_file = "./saved_polivies/mjvel1.policy"
     config['n_itr'] = 1
     promphc.TASKS = TASKS1
-    promphc.main(config)
+    promphc.main(config, saved_file)
 
 
 
 if __name__=="__main__":
-    config = {
-        'seed': 1,
+    idx = int(time.time())
 
-        'baseline': 'LinearFeatureBaseline',
+    parser = argparse.ArgumentParser(description='ProMP: Proximal Meta-Policy Search')
+    parser.add_argument('--config_file', type=str, default='', help='json file with run specifications')
+    parser.add_argument('--dump_path', type=str, default=meta_policy_search_path + '/data/pro-mp/run_%d' % idx)
 
-        'env': 'HalfCheetahRandVelEnv',
+    args = parser.parse_args()
 
-        # sampler config
-        'rollouts_per_meta_task': 20,
-        'max_path_length': 100,
-        'parallel': True,
+    if args.config_file:  # load configuration from json file
+        with open(args.config_file, 'r') as f:
+            config = json.load(f)
 
-        # sample processor config
-        'discount': 0.99,
-        'gae_lambda': 1,
-        'normalize_adv': True,
+    else:  # use default config
 
-        # policy config
-        'hidden_sizes': (64, 64),
-        'learn_std': True,  # whether to learn the standard deviation of the gaussian policy
+        config = {
+            'seed': 1,
 
-        # ProMP config
-        'inner_lr': 0.1,  # adaptation step size
-        'learning_rate': 1e-3,  # meta-policy gradient step size
-        'num_promp_steps': 5,  # number of ProMp steps without re-sampling
-        'clip_eps': 0.3,  # clipping range
-        'target_inner_step': 0.01,
-        'init_inner_kl_penalty': 5e-4,
-        'adaptive_inner_kl_penalty': False,  # whether to use an adaptive or fixed KL-penalty coefficient
-        'n_itr': 0,  # number of overall training iterations
-        'meta_batch_size': 40,  # number of sampled meta-tasks per iterations
-        'num_inner_grad_steps': 1,  # number of inner / adaptation gradient steps
+            'baseline': 'LinearFeatureBaseline',
 
-    }
+            'env': 'HalfCheetahRandVelEnv',
+
+            # sampler config
+            'rollouts_per_meta_task': 20,
+            'max_path_length': 100,
+            'parallel': True,
+
+            # sample processor config
+            'discount': 0.99,
+            'gae_lambda': 1,
+            'normalize_adv': True,
+
+            # policy config
+            'hidden_sizes': (64, 64),
+            'learn_std': True,  # whether to learn the standard deviation of the gaussian policy
+
+            # ProMP config
+            'inner_lr': 0.1,  # adaptation step size
+            'learning_rate': 1e-3,  # meta-policy gradient step size
+            'num_promp_steps': 5,  # number of ProMp steps without re-sampling
+            'clip_eps': 0.3,  # clipping range
+            'target_inner_step': 0.01,
+            'init_inner_kl_penalty': 5e-4,
+            'adaptive_inner_kl_penalty': False,  # whether to use an adaptive or fixed KL-penalty coefficient
+            'n_itr': 0,  # number of overall training iterations
+            'meta_batch_size': 40,  # number of sampled meta-tasks per iterations
+            'num_inner_grad_steps': 1,  # number of inner / adaptation gradient steps
+
+        }
+
+    # configure logger
+    logger.configure(dir=args.dump_path, format_strs=['stdout', 'log', 'csv'],
+                     snapshot_mode='last_gap')
+
+    # dump run configuration before starting training
+    json.dump(config, open(args.dump_path + '/params.json', 'w'), cls=ClassEncoder)
+
+    # start the actual algorithm
     main(config)

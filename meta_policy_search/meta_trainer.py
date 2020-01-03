@@ -42,7 +42,8 @@ class Trainer(object):
             start_itr=0,
             num_inner_grad_steps=1,
             sess=None,
-            experiment=None
+            experiment=None,
+            saved_file="./saved_policies/mjvel.policy"
             ):
         self.algo = algo
         self.env = env
@@ -57,6 +58,7 @@ class Trainer(object):
             sess = tf.Session()
         self.sess = sess
         self.experiment = experiment
+        self.saved = saved_file
 
     def train(self):
         """
@@ -159,7 +161,7 @@ class Trainer(object):
                 logger.log("Saved")
 
                 logger.dumpkvs()
-            with open('./saved_policies/mjvel.policy', 'wb') as policy_file:
+            with open(self.saved, 'wb') as policy_file:
                 pickle.dump(self.policy, policy_file)
                 print("saved policies")
 
