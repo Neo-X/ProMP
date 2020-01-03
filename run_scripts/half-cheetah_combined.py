@@ -33,10 +33,27 @@ def main(config):
     TASKS1=[0, 0.2, 0.4]
     TASKS2=[0, 0.2, 0.4, 0.6]
     # step one
-    saved_file = "./saved_polivies/mjvel1.policy"
-    config['n_itr'] = 1
+    saved_file = "./saved_policies/mjvel1.policy"
+    print("**********************PHASE 1 META***********************")
+    config['n_itr'] = 50
     promphc.TASKS = TASKS1
-    promphc.main(config, saved_file)
+    promphc.main(config, saved_file=saved_file, experiment=experiment)
+
+    print("**********************PHASE 1 RL***********************")
+    config['n_itr'] = 0 #should not matter tho
+    hcrl.TASK = np.array([0.6])
+    hcrl.main(config, load_file=saved_file, experiment=experiment)
+
+    print("**********************PHASE 1 META***********************")
+    config['n_itr'] = 50
+    promphc.TASKS = TASKS2
+    promphc.main(config, saved_file=saved_file, experiment=experiment)
+
+    print("**********************PHASE 2 RL***********************")
+    config['n_itr'] = 0  # should not matter tho
+    hcrl.TASK = np.array([0.8])
+    hcrl.main(config, load_file=saved_file, experiment=experiment)
+
 
 
 

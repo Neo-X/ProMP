@@ -1,8 +1,9 @@
 import sys
 sys.path.append("./")
 from meta_policy_search.utils.PrompExperiment import PrompExperiment
-experiment = PrompExperiment(api_key="KWwx7zh6I2uw6oQMkpEo3smu0",
-                            project_name="ml4l3", workspace="glenb")
+# experiment = PrompExperiment(api_key="KWwx7zh6I2uw6oQMkpEo3smu0",
+#                             project_name="ml4l3", workspace="glenb")
+experiment=None
 
 from meta_policy_search.baselines.linear_baseline import LinearFeatureBaseline
 from meta_policy_search.envs.mujoco_envs.half_cheetah_rand_vel import HalfCheetahRandVelEnv
@@ -25,7 +26,7 @@ import pickle
 
 meta_policy_search_path = '/'.join(os.path.realpath(os.path.dirname(__file__)).split('/')[:-1])
 TASKS=np.array([0, 0.2, 0.4])
-def main(config, saved_file="./saved_polivies/mjvel.polivy"):
+def main(config, saved_file="./saved_polivies/mjvel.polivy", experiment=experiment):
     # config['seed'] = 4
     experiment.set_name("short meta saving test")
     set_seed(config['seed'])
