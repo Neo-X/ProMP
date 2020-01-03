@@ -44,10 +44,10 @@ def main(config):
     hcrl.TASK = np.array([0.6])
     hcrl.main(config, load_file=saved_file, experiment=experiment)
 
-    print("**********************PHASE 1 META***********************")
+    print("**********************PHASE 2 META***********************")
     config['n_itr'] = 50
     promphc.TASKS = TASKS2
-    promphc.main(config, saved_file=saved_file, experiment=experiment)
+    promphc.main(config, load_file=saved_file, saved_file=saved_file, experiment=experiment)
 
     print("**********************PHASE 2 RL***********************")
     config['n_itr'] = 0  # should not matter tho

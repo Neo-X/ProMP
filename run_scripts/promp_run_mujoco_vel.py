@@ -26,7 +26,7 @@ import pickle
 
 meta_policy_search_path = '/'.join(os.path.realpath(os.path.dirname(__file__)).split('/')[:-1])
 TASKS=np.array([0, 0.2, 0.4])
-def main(config, saved_file="./saved_polivies/mjvel.polivy", experiment=experiment):
+def main(config, load_file=None, saved_file="./saved_polivies/mjvel.polivy", experiment=experiment):
     # config['seed'] = 4
     experiment.set_name("short meta saving test")
     set_seed(config['seed'])
@@ -40,58 +40,106 @@ def main(config, saved_file="./saved_polivies/mjvel.polivy", experiment=experime
     env = normalize(env) # apply normalize wrapper to env
     env.set_tasks(TASKS)
 
-    policy = MetaGaussianMLPPolicy(
-            name="meta-policy",
-            obs_dim=np.prod(env.observation_space.shape),
-            action_dim=np.prod(env.action_space.shape),
+    if load_file:
+        with tf.Session().as_default() as sess:
+            with open(load_file, 'rb') as policy_file:
+                policy = pickle.load(policy_file)
+                print("policy loaded")
+            sampler = MetaSampler(
+                env=env,
+                policy=policy,
+                rollouts_per_meta_task=config['rollouts_per_meta_task'],  # This batch_size is confusing
+                meta_batch_size=config['meta_batch_size'],
+                max_path_length=config['max_path_length'],
+                parallel=config['parallel'],
+            )
+
+            sample_processor = MetaSampleProcessor(
+                baseline=baseline,
+                discount=config['discount'],
+                gae_lambda=config['gae_lambda'],
+                normalize_adv=config['normalize_adv'],
+            )
+
+            algo = ProMP(
+                policy=policy,
+                inner_lr=config['inner_lr'],
+                meta_batch_size=config['meta_batch_size'],
+                num_inner_grad_steps=config['num_inner_grad_steps'],
+                learning_rate=config['learning_rate'],
+                num_ppo_steps=config['num_promp_steps'],
+                clip_eps=config['clip_eps'],
+                target_inner_step=config['target_inner_step'],
+                init_inner_kl_penalty=config['init_inner_kl_penalty'],
+                adaptive_inner_kl_penalty=config['adaptive_inner_kl_penalty'],
+            )
+
+            trainer = Trainer(
+                algo=algo,
+                policy=policy,
+                env=env,
+                sampler=sampler,
+                sample_processor=sample_processor,
+                n_itr=config['n_itr'],
+                num_inner_grad_steps=config['num_inner_grad_steps'],
+                experiment=experiment,
+                saved_file=saved_file
+            )
+
+            trainer.train()
+    else:
+        policy = MetaGaussianMLPPolicy(
+                name="meta-policy",
+                obs_dim=np.prod(env.observation_space.shape),
+                action_dim=np.prod(env.action_space.shape),
+                meta_batch_size=config['meta_batch_size'],
+                hidden_sizes=config['hidden_sizes'],
+            )
+
+        sampler = MetaSampler(
+            env=env,
+            policy=policy,
+            rollouts_per_meta_task=config['rollouts_per_meta_task'],  # This batch_size is confusing
             meta_batch_size=config['meta_batch_size'],
-            hidden_sizes=config['hidden_sizes'],
+            max_path_length=config['max_path_length'],
+            parallel=config['parallel'],
         )
 
-    sampler = MetaSampler(
-        env=env,
-        policy=policy,
-        rollouts_per_meta_task=config['rollouts_per_meta_task'],  # This batch_size is confusing
-        meta_batch_size=config['meta_batch_size'],
-        max_path_length=config['max_path_length'],
-        parallel=config['parallel'],
-    )
+        sample_processor = MetaSampleProcessor(
+            baseline=baseline,
+            discount=config['discount'],
+            gae_lambda=config['gae_lambda'],
+            normalize_adv=config['normalize_adv'],
+        )
 
-    sample_processor = MetaSampleProcessor(
-        baseline=baseline,
-        discount=config['discount'],
-        gae_lambda=config['gae_lambda'],
-        normalize_adv=config['normalize_adv'],
-    )
+        algo = ProMP(
+            policy=policy,
+            inner_lr=config['inner_lr'],
+            meta_batch_size=config['meta_batch_size'],
+            num_inner_grad_steps=config['num_inner_grad_steps'],
+            learning_rate=config['learning_rate'],
+            num_ppo_steps=config['num_promp_steps'],
+            clip_eps=config['clip_eps'],
+            target_inner_step=config['target_inner_step'],
+            init_inner_kl_penalty=config['init_inner_kl_penalty'],
+            adaptive_inner_kl_penalty=config['adaptive_inner_kl_penalty'],
+        )
 
-    algo = ProMP(
-        policy=policy,
-        inner_lr=config['inner_lr'],
-        meta_batch_size=config['meta_batch_size'],
-        num_inner_grad_steps=config['num_inner_grad_steps'],
-        learning_rate=config['learning_rate'],
-        num_ppo_steps=config['num_promp_steps'],
-        clip_eps=config['clip_eps'],
-        target_inner_step=config['target_inner_step'],
-        init_inner_kl_penalty=config['init_inner_kl_penalty'],
-        adaptive_inner_kl_penalty=config['adaptive_inner_kl_penalty'],
-    )
-
-    trainer = Trainer(
-        algo=algo,
-        policy=policy,
-        env=env,
-        sampler=sampler,
-        sample_processor=sample_processor,
-        n_itr=config['n_itr'],
-        num_inner_grad_steps=config['num_inner_grad_steps'],
-        experiment=experiment,
-        saved_file=saved_file
-    )
+        trainer = Trainer(
+            algo=algo,
+            policy=policy,
+            env=env,
+            sampler=sampler,
+            sample_processor=sample_processor,
+            n_itr=config['n_itr'],
+            num_inner_grad_steps=config['num_inner_grad_steps'],
+            experiment=experiment,
+            saved_file=saved_file
+        )
 
 
 
-    trainer.train()
+        trainer.train()
 
 
 if __name__=="__main__":
