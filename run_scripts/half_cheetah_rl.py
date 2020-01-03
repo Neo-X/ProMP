@@ -1,9 +1,11 @@
+import sys
+sys.path.append("./")
+
 from meta_policy_search.utils.PrompExperiment import PrompExperiment
 experiment = PrompExperiment(api_key="KWwx7zh6I2uw6oQMkpEo3smu0",
                             project_name="ml4l3", workspace="glenb")
 
-import sys
-sys.path.append("./")
+
 from meta_policy_search.baselines.linear_baseline import LinearFeatureBaseline
 from meta_policy_search.envs.mujoco_envs.half_cheetah_rand_vel import HalfCheetahRandVelEnv
 from meta_policy_search.envs.normalized_env import normalize
