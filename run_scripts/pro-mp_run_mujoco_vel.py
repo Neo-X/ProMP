@@ -25,7 +25,7 @@ import pickle
 
 meta_policy_search_path = '/'.join(os.path.realpath(os.path.dirname(__file__)).split('/')[:-1])
 
-def main(config):
+def main(config, experiment=experiment):
     # config['seed'] = 4
     experiment.set_name("short meta saving test")
     set_seed(config['seed'])

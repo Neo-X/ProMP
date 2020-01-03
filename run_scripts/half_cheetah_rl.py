@@ -1,5 +1,5 @@
-from comet_ml import Experiment
-experiment = Experiment(api_key="KWwx7zh6I2uw6oQMkpEo3smu0",
+from meta_policy_search.utils.PrompExperiment import PrompExperiment
+experiment = PrompExperiment(api_key="KWwx7zh6I2uw6oQMkpEo3smu0",
                             project_name="ml4l3", workspace="glenb")
 
 import sys
@@ -27,7 +27,7 @@ import pickle
 
 meta_policy_search_path = '/'.join(os.path.realpath(os.path.dirname(__file__)).split('/')[:-1])
 
-def main(config):
+def main(config, experiment=experiment):
     # config['seed'] = 4
     experiment.set_name("short meta saving test")
     set_seed(config['seed'])
