@@ -1,5 +1,7 @@
-from comet_ml import Experiment
-experiment = Experiment(api_key="KWwx7zh6I2uw6oQMkpEo3smu0",
+import sys
+sys.path.append("./")
+from meta_policy_search.utils.PrompExperiment import PrompExperiment
+experiment = PrompExperiment(api_key="KWwx7zh6I2uw6oQMkpEo3smu0",
                             project_name="ml4l3", workspace="glenb")
 
 import sys
@@ -15,7 +17,8 @@ from meta_policy_search.samplers.meta_sample_processor import MetaSampleProcesso
 from meta_policy_search.policies.meta_gaussian_mlp_policy import MetaGaussianMLPPolicy
 from meta_policy_search.utils import logger
 from meta_policy_search.utils.utils import set_seed, ClassEncoder
-
+import run_scripts.half_cheetah_rl as hcrl
+import run_scripts.promp_run_mujoco_vel as promphc
 import numpy as np
 import tensorflow as tf
 import os
@@ -27,7 +30,12 @@ import pickle
 meta_policy_search_path = '/'.join(os.path.realpath(os.path.dirname(__file__)).split('/')[:-1])
 
 def main():
-    
+    TASKS1=[0, 0.2, 0.4]
+    TASKS2=[0, 0.2, 0.4, 0.6]
+    # step one
+    promphc.TASKS = TASKS1
+    promphc.main()
+
 
 
 if __name__=="__main__":

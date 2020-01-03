@@ -2,8 +2,9 @@ import sys
 sys.path.append("./")
 
 from meta_policy_search.utils.PrompExperiment import PrompExperiment
-experiment = PrompExperiment(api_key="KWwx7zh6I2uw6oQMkpEo3smu0",
-                            project_name="ml4l3", workspace="glenb")
+# experiment = PrompExperiment(api_key="KWwx7zh6I2uw6oQMkpEo3smu0",
+#                             project_name="ml4l3", workspace="glenb")
+experiment = None
 
 
 from meta_policy_search.baselines.linear_baseline import LinearFeatureBaseline
@@ -28,8 +29,8 @@ import time
 import pickle
 
 meta_policy_search_path = '/'.join(os.path.realpath(os.path.dirname(__file__)).split('/')[:-1])
-
-def main(config, experiment=experiment):
+TASK=np.array([0.6])
+def main(config):
     # config['seed'] = 4
     experiment.set_name("short meta saving test")
     set_seed(config['seed'])
@@ -41,6 +42,7 @@ def main(config, experiment=experiment):
 
     env = globals()[config['env']]() # instantiate env
     env = normalize(env) # apply normalize wrapper to env
+    env.set_tasks(TASK)
 
     with tf.Session().as_default() as sess:
         with open('./saved_policies/mjvel.policy', 'rb') as policy_file:

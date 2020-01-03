@@ -1,9 +1,9 @@
-from comet_ml import Experiment
-experiment = Experiment(api_key="KWwx7zh6I2uw6oQMkpEo3smu0",
-                            project_name="ml4l3", workspace="glenb")
-
 import sys
 sys.path.append("./")
+from meta_policy_search.utils.PrompExperiment import PrompExperiment
+experiment = PrompExperiment(api_key="KWwx7zh6I2uw6oQMkpEo3smu0",
+                            project_name="ml4l3", workspace="glenb")
+
 from meta_policy_search.baselines.linear_baseline import LinearFeatureBaseline
 from meta_policy_search.envs.mujoco_envs.half_cheetah_rand_vel import HalfCheetahRandVelEnv
 from meta_policy_search.envs.normalized_env import normalize
@@ -24,8 +24,8 @@ import time
 import pickle
 
 meta_policy_search_path = '/'.join(os.path.realpath(os.path.dirname(__file__)).split('/')[:-1])
-
-def main(config, experiment=experiment):
+TASKS=np.array([0, 0.2, 0.4])
+def main(config):
     # config['seed'] = 4
     experiment.set_name("short meta saving test")
     set_seed(config['seed'])
@@ -37,6 +37,7 @@ def main(config, experiment=experiment):
 
     env = globals()[config['env']]() # instantiate env
     env = normalize(env) # apply normalize wrapper to env
+    env.set_tasks(TASKS)
 
     policy = MetaGaussianMLPPolicy(
             name="meta-policy",
@@ -83,7 +84,8 @@ def main(config, experiment=experiment):
         sample_processor=sample_processor,
         n_itr=config['n_itr'],
         num_inner_grad_steps=config['num_inner_grad_steps'],
-        experiment=experiment
+        experiment=experiment,
+        saved_file="./saved_policies/mjvel1.policy"
     )
 
 

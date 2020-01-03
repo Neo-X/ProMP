@@ -11,7 +11,7 @@ TASKSL1 = np.array([0, 0.2, 0.4])
 
 class HalfCheetahRandVelEnv(MetaEnv, MujocoEnv, gym.utils.EzPickle):
     def __init__(self):
-        self.set_tasks(TASKS2)
+        self.set_tasks(TASKSL1)
         self.set_task(self.sample_tasks(1)[0])
         MujocoEnv.__init__(self, 'half_cheetah.xml', 5)
         gym.utils.EzPickle.__init__(self)
