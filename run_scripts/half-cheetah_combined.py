@@ -74,4 +74,4 @@ if __name__=="__main__":
         'num_inner_grad_steps': 1,  # number of inner / adaptation gradient steps
 
     }
-    main()
+    main(config)
