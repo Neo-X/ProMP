@@ -41,6 +41,7 @@ def main(config, load_file=None, saved_file="./saved_polivies/mjvel.polivy", exp
     env.set_tasks(TASKS)
 
     if load_file:
+        print("***********loading policy**************")
         with tf.Session().as_default() as sess:
             with open(load_file, 'rb') as policy_file:
                 policy = pickle.load(policy_file)
@@ -88,6 +89,7 @@ def main(config, load_file=None, saved_file="./saved_polivies/mjvel.polivy", exp
 
             trainer.train()
     else:
+        print("***************** policy from scratch*****************")
         policy = MetaGaussianMLPPolicy(
                 name="meta-policy",
                 obs_dim=np.prod(env.observation_space.shape),
