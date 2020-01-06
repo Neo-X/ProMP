@@ -20,7 +20,7 @@ from meta_policy_search.utils.utils import set_seed, ClassEncoder
 import run_scripts.half_cheetah_rl as hcrl
 import run_scripts.promp_run_mujoco_vel as promphc
 import numpy as np
-import tensorflow as tf
+# import tensorflow as tf
 import os
 import json
 import argparse
@@ -35,7 +35,7 @@ def main(config):
     # step one
     saved_file = "./saved_policies/mjvel1.policy"
     print("**********************PHASE 1 META***********************")
-    config['n_itr'] = 50
+    config['n_itr'] = 0
     promphc.TASKS = TASKS1
     promphc.main(config, saved_file=saved_file, experiment=experiment)
 
@@ -45,7 +45,7 @@ def main(config):
     hcrl.main(config, load_file=saved_file, experiment=experiment)
 
     print("**********************PHASE 2 META***********************")
-    config['n_itr'] = 50
+    config['n_itr'] = 0
     promphc.TASKS = TASKS2
     promphc.main(config, load_file=saved_file, saved_file=saved_file, experiment=experiment)
 
