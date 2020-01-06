@@ -20,7 +20,7 @@ from meta_policy_search.utils.utils import set_seed, ClassEncoder
 import run_scripts.half_cheetah_rl as hcrl
 import run_scripts.promp_run_mujoco_vel as promphc
 import numpy as np
-# import tensorflow as tf
+import tensorflow as tf
 import os
 import json
 import argparse
@@ -38,17 +38,19 @@ def main(config):
     config['n_itr'] = 0
     promphc.TASKS = TASKS1
     promphc.main(config, saved_file=saved_file, experiment=experiment)
+    tf.reset_default_graph()
 
     print("**********************PHASE 1 RL***********************")
     config['n_itr'] = 0 #should not matter tho
     hcrl.TASK = np.array([0.6])
     hcrl.main(config, load_file=saved_file, experiment=experiment)
+    tf.reset_default_graph()
 
     print("**********************PHASE 2 META***********************")
     config['n_itr'] = 0
     promphc.TASKS = TASKS2
     promphc.main(config, load_file=saved_file, saved_file=saved_file, experiment=experiment)
-
+    tf.reset_default_graph()
     print("**********************PHASE 2 RL***********************")
     config['n_itr'] = 0  # should not matter tho
     hcrl.TASK = np.array([0.8])
