@@ -35,7 +35,7 @@ def main(config):
     # step one
     saved_file = "./saved_policies/mjvel1.policy"
     print("**********************PHASE 1 META***********************")
-    config['n_itr'] = 0
+    config['n_itr'] = 100
     promphc.TASKS = TASKS1
     promphc.main(config, saved_file=saved_file, experiment=experiment)
     tf.reset_default_graph()
@@ -47,7 +47,7 @@ def main(config):
     tf.reset_default_graph()
 
     print("**********************PHASE 2 META***********************")
-    config['n_itr'] = 0
+    config['n_itr'] = 100
     promphc.TASKS = TASKS2
     promphc.main(config, load_file=saved_file, saved_file=saved_file, experiment=experiment)
     tf.reset_default_graph()
