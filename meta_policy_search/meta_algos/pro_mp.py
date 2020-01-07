@@ -162,7 +162,7 @@ class ProMP(MAMLAlgo):
                 outer_kl=mean_outer_kl,
             )
 
-    def optimize_policy(self, all_samples_data, log=True):
+    def optimize_policy(self, all_samples_data, log=True, experiment=experiment):
         """
         Performs MAML outer step
 
@@ -197,6 +197,13 @@ class ProMP(MAMLAlgo):
             logger.logkv('LossAfter', loss_after)
             logger.logkv('KLInner', np.mean(inner_kls))
             logger.logkv('KLCoeffInner', np.mean(self.inner_kl_coeff))
+
+        if experiment:
+            experiment.log_metric('LossBefore', loss_before)
+            experiment.log_metric('LossAfter', loss_after)
+            experiment.log_metric('LossDifference', loss_after - loss_before)
+            experiment.log_metric('KLInner', np.mean(inner_kls))
+            experiment.log_metric('KLCoeffInner', np.mean(self.inner_kl_coeff))
 
     def adapt_kl_coeff(self, kl_coeff, kl_values, kl_target):
         if hasattr(kl_values, '__iter__'):

@@ -139,7 +139,7 @@ class Trainer(object):
                 logger.log("Optimizing policy...")
                 # This needs to take all samples_data so that it can construct graph for meta-optimization.
                 time_outer_step_start = time.time()
-                self.algo.optimize_policy(all_samples_data)
+                self.algo.optimize_policy(all_samples_data, experiment=self.experiment)
 
                 """ ------------------- Logging Stuff --------------------------"""
                 logger.logkv('Itr', itr)
@@ -154,6 +154,18 @@ class Trainer(object):
                 logger.logkv('Time', time.time() - start_time)
                 logger.logkv('ItrTime', time.time() - itr_start_time)
                 logger.logkv('Time-MAMLSteps', time.time() - time_maml_opt_start)
+                if self.experiment:
+                    self.experiment.log_metric('n_timesteps', self.sampler.total_timesteps_sampled)
+
+                    self.experiment.log_metric('Time-OuterStep', time.time() - time_outer_step_start)
+                    self.experiment.log_metric('Time-TotalInner', total_inner_time)
+                    self.experiment.log_metric('Time-InnerStep', np.sum(list_inner_step_time))
+                    self.experiment.log_metric('Time-SampleProc', np.sum(list_proc_samples_time))
+                    self.experiment.log_metric('Time-Sampling', np.sum(list_sampling_time))
+
+                    self.experiment.log_metric('Time', time.time() - start_time)
+                    self.experiment.log_metric('ItrTime', time.time() - itr_start_time)
+                    self.experiment.log_metric('Time-MAMLSteps', time.time() - time_maml_opt_start)
 
                 logger.log("Saving snapshot...")
                 params = self.get_itr_snapshot(itr)
