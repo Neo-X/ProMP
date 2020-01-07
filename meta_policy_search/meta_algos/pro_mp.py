@@ -162,7 +162,7 @@ class ProMP(MAMLAlgo):
                 outer_kl=mean_outer_kl,
             )
 
-    def optimize_policy(self, all_samples_data, log=True, experiment=experiment):
+    def optimize_policy(self, all_samples_data, log=True, experiment=None):
         """
         Performs MAML outer step
 
