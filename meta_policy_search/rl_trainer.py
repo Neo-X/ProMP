@@ -161,15 +161,14 @@ class RLTrainer(object):
             if self.experiment:
                 self.experiment.log_metric('n_timesteps', self.sampler.total_timesteps_sampled)
 
-                self.experiment.log_metric('Time-OuterStep', time.time() - time_outer_step_start)
                 self.experiment.log_metric('Time-TotalInner', total_inner_time)
                 self.experiment.log_metric('Time-InnerStep', np.sum(list_inner_step_time))
                 self.experiment.log_metric('Time-SampleProc', np.sum(list_proc_samples_time))
                 self.experiment.log_metric('Time-Sampling', np.sum(list_sampling_time))
 
                 self.experiment.log_metric('Time', time.time() - start_time)
-                self.experiment.log_metric('ItrTime', time.time() - itr_start_time)
-                self.experiment.log_metric('Time-MAMLSteps', time.time() - time_maml_opt_start)
+                self.experiment.log_metric('ItrTime', 0)
+                self.experiment.log_metric('Time-MAMLSteps', 0)
             logger.log("Saving snapshot...")
             params = self.get_itr_snapshot(itr)
             logger.save_itr_params(itr, params)
